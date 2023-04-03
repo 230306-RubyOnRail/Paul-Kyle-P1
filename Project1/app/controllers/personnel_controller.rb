@@ -1,4 +1,5 @@
 class PersonnelController < ApplicationController
+  include Authenticate
   def index
   end
 
@@ -12,5 +13,10 @@ class PersonnelController < ApplicationController
   end
 
   def destroy
+  end
+
+  def authenticate(password)
+    if this.pass == password
+    end
   end
 end

@@ -1,4 +1,5 @@
 class ReimbursementController < ApplicationController
+  include Authenticate
   def index
   end
 
