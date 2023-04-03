@@ -20,8 +20,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_02_000328) do
   end
 
   create_table "login_tokens", force: :cascade do |t|
-    t.string "personnel_username", null: false
     t.string "token", null: false
+    t.string "personnel_id", null: false
   end
 
   create_table "personnels", force: :cascade do |t|

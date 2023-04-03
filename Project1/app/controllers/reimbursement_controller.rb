@@ -1,10 +1,12 @@
+require_relative 'concerns/authenticate'
+
 class ReimbursementController < ApplicationController
   include Authenticate
   def index
-    if current_user.title == 'Manager'
-      json status: [200, 'OK'], body: {reimbursement_requests: ReimbursementRequest.all}, headers: cors
+    if current_user.title.to_i == 1
+      render json: { reimbursement_requests: ReimbursementRequest.all }, status: :ok, headers: :cors
     else
-      json status: [200, 'OK'], body: {reimbursement_requests: ReimbursementRequest.where(personnel_id: current_user.id)}, headers: cors
+      render json: {reimbursement_requests: ReimbursementRequest.where(personnel_id: current_user.id)}, status: :ok, headers: :cors
     end
   end
 
@@ -12,9 +14,9 @@ class ReimbursementController < ApplicationController
     new_reimbursement = ReimbursementRequest.new(@request[:body])
     begin
       if new_reimbursement.save
-        {status: [204, 'No Content'], headers: cors({'Location' => "/reimbursement/#{new_reimbursement.id}"})}
+        render json: {},status: :created
       else
-        json status: [400, 'Bad Request'], body: {message: 'Invalid reimbursement request'}, headers: cors
+        render json: {message: 'Invalid reimbursement request'}, status: :bad_request
       end
       rescue StandardError => e
     end
@@ -23,7 +25,7 @@ class ReimbursementController < ApplicationController
   #Authentication should handle this so that only the user who created the reimbursement request can see it
   def show
     reimbursement = ReimbursementRequest.find(params[:id])
-    json status: [200, 'OK'], body: {reimbursement_request: reimbursement}, headers: cors
+    render json: {reimbursement_request: reimbursement}, status: :ok, headers: :cors
   end
 
 
@@ -31,22 +33,22 @@ class ReimbursementController < ApplicationController
     reimbursement = ReimbursementRequest.find(params[:id])
     if current_user = reimbursement.personnel_id
       if reimbursement.update(@request[:body])
-        json status: [204, 'No Content'], headers: cors
+        render json: {}, status: :no_content, headers: cors({'Location' => "/reimbursement/#{reimbursement.id}"})
       else
-        json status: [400, 'Bad Request'], body: {message: 'Invalid reimbursement request'}, headers: cors
+        render json: {message: 'Invalid reimbursement request'}, status: :bad_request
       end
     else
-      json status: [403, 'Forbidden'], body: {message: 'You are not allowed to perform this action'}, headers: cors
+      render json: {message: 'Invalid token'}, status: :forbidden, headers: :cors
     end
   end
 
   def destroy
     reimbursement = ReimbursementRequest.find(params[:id])
-    if current_user.title == 'Manager'
+    if current_user.title.to_i == 1
         reimbursement.destroy
-        json status: [204, 'No Content'], headers: cors
-      else
-        json status: [403, 'Forbidden'], body: {message: 'You are not allowed to perform this action'}, headers: cors
+        render json: {}, status: :no_content
+    else
+      render json: {message: 'Invalid token'}, status: :forbidden
     end
   end
 end

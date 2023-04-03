@@ -1,7 +1,9 @@
+require_relative 'concerns/authenticate'
+
 class PersonnelController < ApplicationController
   include Authenticate
   def index
-    if current_user.title == 'Manager'
+    if current_user.title.to_i == 1
       render json: { personnel: Personnel.all }, status: :ok, headers: :cors
     else
       render json: {message: 'Invalid token'}, status: :unauthorized, headers: :cors
@@ -9,18 +11,19 @@ class PersonnelController < ApplicationController
   end
 
   def create
-    if current_user.title == 'Manager'
+    if current_user.title.to_i == 1
       new_personnel = Personnel.new(@request[:body])
       begin
         if new_personnel.save
-          render json: status: [201, 'Created'], headers: cors({'Location' => "/personnel/#{new_personnel.id}"})
+          #fix this
+          #render json: status: [201, 'Created'], headers: cors({'Location' => "/personnel/#{new_personnel.id}"})
         else
-          json status: [400, 'Bad Request'], body: {message: 'Invalid personnel creation'}, headers: cors
+          json status: [400, 'Bad Request'], body: {message: 'Invalid personnel creation'}, headers: :cors
         end
         rescue StandardError => e
       end
     else
-      json status: [401, 'Unauthorized'], body: {message: 'Invalid token'}, headers: cors
+      json status: [401, 'Unauthorized'], body: {message: 'Invalid token'}, headers: :cors
     end
   end
 
