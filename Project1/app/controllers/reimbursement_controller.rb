@@ -26,9 +26,27 @@ class ReimbursementController < ApplicationController
     json status: [200, 'OK'], body: {reimbursement_request: reimbursement}, headers: cors
   end
 
+
   def update
+    reimbursement = ReimbursementRequest.find(params[:id])
+    if current_user = reimbursement.personnel_id
+      if reimbursement.update(@request[:body])
+        json status: [204, 'No Content'], headers: cors
+      else
+        json status: [400, 'Bad Request'], body: {message: 'Invalid reimbursement request'}, headers: cors
+      end
+    else
+      json status: [403, 'Forbidden'], body: {message: 'You are not allowed to perform this action'}, headers: cors
+    end
   end
 
   def destroy
+    reimbursement = ReimbursementRequest.find(params[:id])
+    if current_user.title == 'Manager'
+        reimbursement.destroy
+        json status: [204, 'No Content'], headers: cors
+      else
+        json status: [403, 'Forbidden'], body: {message: 'You are not allowed to perform this action'}, headers: cors
+    end
   end
 end

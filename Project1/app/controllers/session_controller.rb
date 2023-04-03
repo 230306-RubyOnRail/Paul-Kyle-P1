@@ -7,7 +7,7 @@ class SessionController < ApplicationController
     if user&.authenticate(credentials['password'])
       render json: { token: JsonWebToken.encode(user_id: user.id), user_id: user.id}, status: :created
     else
-      head :unauthorized
+      render json: { error: 'Invalid username/password' }, status: :unauthorized
     end
   end
 end

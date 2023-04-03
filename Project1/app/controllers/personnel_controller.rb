@@ -2,9 +2,9 @@ class PersonnelController < ApplicationController
   include Authenticate
   def index
     if current_user.title == 'Manager'
-      json status: [200, 'OK'], body: {personnel: Personnel.all}, headers: cors
+      render json: { personnel: Personnel.all }, status: :ok, headers: :cors
     else
-      json status: [401, 'Unauthorized'], body: {message: 'Invalid token'}, headers: cors
+      render json: {message: 'Invalid token'}, status: :unauthorized, headers: :cors
     end
   end
 
@@ -13,7 +13,7 @@ class PersonnelController < ApplicationController
       new_personnel = Personnel.new(@request[:body])
       begin
         if new_personnel.save
-          {status: [204, 'No Content'], headers: cors({'Location' => "/personnel/#{new_personnel.id}"})}
+          render json: status: [201, 'Created'], headers: cors({'Location' => "/personnel/#{new_personnel.id}"})
         else
           json status: [400, 'Bad Request'], body: {message: 'Invalid personnel creation'}, headers: cors
         end
@@ -58,8 +58,4 @@ class PersonnelController < ApplicationController
     end
   end
 
-  def authenticate(password)
-    if this.pass == password
-    end
-  end
 end
