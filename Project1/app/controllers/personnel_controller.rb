@@ -4,60 +4,81 @@ class PersonnelController < ApplicationController
   include Authenticate
   def index
     if current_user.title.to_i == 1
-      render json: { personnel: Personnel.all }, status: :ok, headers: :cors
+      render json: { personnel: Personnel.all }, status: :ok
     else
-      render json: {message: 'Invalid token'}, status: :unauthorized, headers: :cors
+      render json: {personnel: Personnel.where(id: current_user.id)}, status: :ok
     end
   end
 
   def create
     if current_user.title.to_i == 1
-      new_personnel = Personnel.new(@request[:body])
+      new_personnel = Personnel.new(JSON.parse(request.body.read))
       begin
         if new_personnel.save
-          #fix this
-          #render json: status: [201, 'Created'], headers: cors({'Location' => "/personnel/#{new_personnel.id}"})
+          render json: {}, status: :created
         else
-          json status: [400, 'Bad Request'], body: {message: 'Invalid personnel creation'}, headers: :cors
+          render json: {message: 'Invalid personnel creation'}, status: :bad_request
         end
         rescue StandardError => e
       end
     else
-      json status: [401, 'Unauthorized'], body: {message: 'Invalid token'}, headers: :cors
+      render json: {message: 'Invalid token'}, status: :unauthorized
     end
   end
 
   def show
-    personnel = Personnel.find(params[:id])
-    json status: [200, 'OK'], body: {personnel: personnel}, headers: cors
+    #fix if not there errors
+    personnel = Personnel.where(id: params[:id]).first
+    if personnel
+      if personnel.id == current_user.id || current_user.title.to_i == 1
+        render json: {personnel: personnel}, status: :ok
+      else
+        render json: {message: 'Invalid token'}, status: :forbidden
+      end
+    else
+      render json: {message: "Personnel with id #{params[:id]} not found"}, status: :not_found
+    end
+
   end
 
   #Should managers be able to update personnel information?
   # In this code the manager can only update their own information
   def update
-    personnel = Personnel.find(params[:id])
-    begin
-      if personnel.id == current_user.id
-        personnel.update(@request[:body])
-        {status: [204, 'No Content'], headers: cors({'Location' => "/personnel/#{personnel.id}"})}
-      else
-        json status: [401, 'Unauthorized'], body: {message: 'Invalid token'}, headers: cors
-      end
+    personnel = Personnel.where(id: params[:id]).first
+    if personnel
+      begin
+        if personnel.id == current_user.id || current_user.title.to_i == 1
+          personnel.update(JSON.parse(request.body.read))
+          render json: {}, status: :no_content
+        else
+          render json: {message: 'Invalid token'}, status: :forbidden
+        end
       rescue StandardError => e
+      end
+    else
+      render json: {message: "Personnel with id #{params[:id]} not found"}, status: :not_found
     end
   end
 
   def destroy
-    personnel = Personnel.find(params[:id])
-    @id = personnel.id
-    begin
-      if personnel.title == 'Manager'
-        personnel.destroy
-        {status: [204, 'No Content'], headers: cors({'Location' => "/personnel/#{@id}"})}
+    if current_user.title.to_i == 1
+      personnel = Personnel.where(id: params[:id]).first
+      if personnel
+        @id = personnel.id
+        begin
+          if current_user.title.to_i == 1
+            personnel.destroy
+            render json: {}, status: :no_content
+          else
+            render json: {message: 'Invalid token'}, status: :forbidden
+          end
+        rescue StandardError => e
+        end
       else
-        json status: [401, 'Unauthorized'], body: {message: 'Invalid token'}, headers: cors
+        render json: {message: "Personnel with id #{params[:id]} not found"}, status: :not_found
       end
-      rescue StandardError => e
+    else
+      render json: {message: 'Invalid token'}, status: :unauthorized
     end
   end
 
