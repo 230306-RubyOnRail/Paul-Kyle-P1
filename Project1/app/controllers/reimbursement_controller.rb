@@ -24,14 +24,16 @@ class ReimbursementController < ApplicationController
 
   #Authentication should handle this so that only the user who created the reimbursement request can see it
   def show
-    puts "params[:id] = #{params[:id]}"
     reimbursement = ReimbursementRequest.where(id: params[:id]).first
     if reimbursement
-      render json: {reimbursement_request: reimbursement}, status: :ok
-    else
-      render json: {message: "Reimbursement request with id #{params[:id]} not found"}, status: :not_found
+      if current_user.id == reimbursement.personnel_id || current_user.title.to_i == 1
+        render json: {reimbursement_request: reimbursement}, status: :ok
+      else
+        render json: {message: 'Invalid token'}, status: :forbidden
+      end
+      else
+        render json: {message: "Reimbursement request with id #{params[:id]} not found"}, status: :not_found
     end
-
   end
 
 
@@ -56,7 +58,7 @@ class ReimbursementController < ApplicationController
   def destroy
     reimbursement = ReimbursementRequest.where(id: params[:id]).first
     if reimbursement
-      if current_user.title.to_i == 1
+      if current_user.title.to_i == 1 || current_user.id == reimbursement.personnel_id
         reimbursement.destroy
         render json: {}, status: :no_content
       else
