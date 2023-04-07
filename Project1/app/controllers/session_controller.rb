@@ -13,7 +13,7 @@ class SessionController < ApplicationController
       else
         LoginToken.create(token: @token, personnel_id: user.id)
       end
-      render json: { token: @token, user_id: user.id}, status: :created
+      render json: { token: @token, user_title: user.title, user_id: user.id, username: user.username}, status: :created
     else
       render json: { error: 'Invalid username/password' }, status: :unauthorized
     end
