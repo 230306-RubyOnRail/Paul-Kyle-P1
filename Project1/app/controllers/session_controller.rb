@@ -5,7 +5,8 @@ class SessionController < ApplicationController
 
   def create
     credentials = JSON.parse(request.body.read)
-    user = Personnel.where(username: credentials['username']).first
+    user = Personnel.where(username: credentials['userName']).first
+
     if user&.authenticate(credentials['password'])
       @token = JsonWebToken.encode(user_id: user.id)
       if LoginToken.where(personnel_id: user.id).first

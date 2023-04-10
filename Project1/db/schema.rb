@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_02_000328) do
   create_table "personnels", force: :cascade do |t|
     t.string "username", null: false
     t.string "pass", null: false
-    t.string "name", null: fals
+    t.string "name", null: false
     t.string "title", null: false
   end
 
