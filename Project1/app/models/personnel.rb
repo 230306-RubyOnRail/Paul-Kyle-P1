@@ -1,7 +1,7 @@
 class Personnel < ApplicationRecord
-  has_many :reimbursement_requests, dependent: :destroy
+  has_many :reimbursement_request
   has_one :job
-  has_one :login_token, dependent: :destroy
+  has_one :login_token
 
   def authenticate(password)
     if pass == password

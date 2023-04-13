@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  title: MyString
-  salary: 9.99
+employees:
+  title: employee
+  salary: 500.00
 
-two:
-  title: MyString
-  salary: 9.99
+managers:
+  title: manager
+  salary: 800.00

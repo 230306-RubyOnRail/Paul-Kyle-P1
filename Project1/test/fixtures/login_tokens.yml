@@ -1,11 +1,5 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  id: 1
-  personnel_username: MyString
-  token: MyString
-
-two:
-  id: 1
-  personnel_username: MyString
-  token: MyString
+token_entry:
+  token: "eyJleHAiOjE2ODEzNjc3ODksImFsZyI6IkhTMjU2In0.eyJ1c2VyX2lkIjozfQ.byCmRA5I9YR3Ama-roNu28yiye9XNgd37ThfOgrFcVU"
+  personnel_id: employee1
