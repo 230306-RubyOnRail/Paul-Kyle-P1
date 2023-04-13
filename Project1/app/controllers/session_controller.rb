@@ -14,8 +14,10 @@ class SessionController < ApplicationController
       else
         LoginToken.create(token: @token, personnel_id: user.id)
       end
+      logger.info "User #{user.username} logged in"
       render json: { token: @token, user_title: user.title, user_id: user.id, username: user.username, name: user.name}, status: :created
     else
+      logger.info "User #{credentials['userName']} failed to log in"
       render json: { error: 'Invalid username/password' }, status: :unauthorized
     end
   end

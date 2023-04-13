@@ -21,7 +21,9 @@ class PersonnelController < ApplicationController
         end
         rescue StandardError => e
       end
+      logger.info "Personnel created: #{new_personnel.inspect} created by #{current_user.inspect}"
     else
+      logger.info "Personnel creation failed: #{new_personnel.inspect} attempted by #{current_user.inspect}"
       render json: {message: 'Invalid token'}, status: :unauthorized
     end
   end
@@ -55,7 +57,9 @@ class PersonnelController < ApplicationController
         end
       rescue StandardError => e
       end
+      logger.info "Personnel updated: #{personnel.inspect} updated by #{current_user.inspect}"
     else
+      logger.info "Personnel update failed: #{personnel.inspect} attempted by #{current_user.inspect}"
       render json: {message: "Personnel with id #{params[:id]} not found"}, status: :not_found
     end
   end
@@ -74,10 +78,12 @@ class PersonnelController < ApplicationController
           end
         rescue StandardError => e
         end
+        logger.info "Personnel deleted: #{personnel.inspect} deleted by #{current_user.inspect}"
       else
         render json: {message: "Personnel with id #{params[:id]} not found"}, status: :not_found
       end
     else
+      logger.info "Personnel deletion failed: #{personnel.inspect} attempted by #{current_user.inspect}"
       render json: {message: 'Invalid token'}, status: :unauthorized
     end
   end
