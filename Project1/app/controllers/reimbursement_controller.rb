@@ -3,13 +3,6 @@ require_relative 'concerns/authenticate'
 class ReimbursementController < ApplicationController
   include Authenticate
 
-
-
-
-  # def index
-  #    render json: ReimbursementRequest.all, status: :ok
-  #end
-
   def index
     if current_user.title.to_i == 1
       render json: ReimbursementRequest.all, status: :ok
@@ -17,19 +10,6 @@ class ReimbursementController < ApplicationController
       render json: ReimbursementRequest.where(personnel_id: current_user.id), status: :ok
     end
   end
-
-
-  #def create
-  #  new_reimbursement = ReimbursementRequest.new(JSON.parse(request.body.read).merge(personnel_id: 1).except('id'))
-  #  begin
-  #    if new_reimbursement.save
-  #      render json: new_reimbursement, status: :ok
-  #    else
-  #      render json: {message: 'Invalid reimbursement request'}, status: :bad_request
-  #    end
-  #  rescue StandardError => e
-  #  end
-  #end
 
   def create
      new_reimbursement = ReimbursementRequest.new(JSON.parse(request.body.read).merge(personnel_id: current_user.id).except('id').except('manager_id').except('status'))
@@ -81,20 +61,6 @@ class ReimbursementController < ApplicationController
     end
 
   end
-  #
-  #def update
-  #  reimbursement = ReimbursementRequest.where(id: params[:id]).first
-  #  if reimbursement
-  #      if reimbursement.update(JSON.parse(request.body.read))
-  #        puts "Reimbursement request updated successfully for #{reimbursement}"
-  #        render json: reimbursement, status: :ok
-  #      else
-  #        render json: {message: 'Invalid reimbursement request'}, status: :bad_request
-  #      end
-  #    else
-  #      render json: {message: "Reimbursement request with id #{params[:id]} not found"}, status: :not_found
-  #  end
-  #end
 
   def destroy
     reimbursement = ReimbursementRequest.where(id: params[:id]).first
@@ -111,15 +77,3 @@ class ReimbursementController < ApplicationController
 
     end
   end
-
-  #def destroy
-  #reimbursement = ReimbursementRequest.where(id: params[:id]).first
-  #if reimbursement
-    #reimbursement.destroy
-      #render json: {}, status: :no_content
-      #else
-    #render json: {message: "Reimbursement request with id #{params[:id]} not found"}, status: :not_found
-    #  end
-
-  #end
-  #end

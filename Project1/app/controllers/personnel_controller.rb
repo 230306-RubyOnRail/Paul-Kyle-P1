@@ -15,7 +15,7 @@ class PersonnelController < ApplicationController
       new_personnel = Personnel.new(JSON.parse(request.body.read))
       begin
         if new_personnel.save
-          render json: {}, status: :created
+          render json:, status: :created
         else
           render json: {message: 'Invalid personnel creation'}, status: :bad_request
         end
@@ -43,8 +43,7 @@ class PersonnelController < ApplicationController
 
   end
 
-  #Should managers be able to update personnel information?
-  # In this code the manager can only update their own information
+
   def update
     personnel = Personnel.where(id: params[:id]).first
     if personnel
